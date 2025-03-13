@@ -1,9 +1,9 @@
 import java.util.*;
 
 public class LangDictionaryLZW {
-    public HashMap<String, Short> Dictionary;
+    public HashMap<String, Integer> Dictionary;
     public HashMap<Character, TreeSet<String>> WordsByFirstLetter;
-    private Short counter;
+    private Integer counter;
     public int maximumLength;
     private final String[] eng = {"ed ", "er ", " the ", " a ", " an ", " as ", "ing ", " with ", "th", " if ",
             " and ", " are ", "'re ", " am ", " by ", "he", "in", "er", "an", "re", "on", "at", "en", "nd", "ti",
@@ -22,7 +22,7 @@ public class LangDictionaryLZW {
     public LangDictionaryLZW() {
         Dictionary = new HashMap<>();
         WordsByFirstLetter = new HashMap<>();
-        counter = Short.MIN_VALUE + 1;
+        counter = Integer.MIN_VALUE + 1;
     }
 
     public void addTextSymbols(HashSet<Character> symbols) {
@@ -59,10 +59,10 @@ public class LangDictionaryLZW {
             if (maximumLength < word.length()) maximumLength = word.length();
         }
     }
-    public Short getCode(String word) {
+    public Integer getCode(String word) {
         return Dictionary.get(word);
     }
-    public String getWord(Short b) {
+    public String getWord(Integer b) {
         for (String s : Dictionary.keySet()) {
             if (Objects.equals(b, Dictionary.get(s))) return s;
         }

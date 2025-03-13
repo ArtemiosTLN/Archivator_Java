@@ -21,14 +21,14 @@ public class LZW {
                 filename = scanner.nextLine();
                 System.out.println("Enter language (est, eng):");
                 lang = scanner.nextLine();
+                LangDictionaryLZW .setLang(lang);
                 text = switch (lang) {
                     case "est" -> ReadTextFile("corpus_est/" + filename);
                     case "eng" -> ReadTextFile("corpus_eng/" + filename);
                     case "rus" -> ReadTextFile("corpus_rus/" + filename);
                     default -> text;
                 };
-                LangDictionaryLZW .setLang(lang);
-                List<Short> code = EncodeText(text);
+                List<Integer> code = EncodeText(text);
                 WriteBinFile("bin_files/" + filename.substring(0, filename.length() - 3) + "bin", code, lang);
                 break;
             case "d":
@@ -39,8 +39,8 @@ public class LZW {
         }
     }
 
-    public static List<Short> EncodeText(String text) {
-        List<Short> result = new ArrayList<>();
+    public static List<Integer> EncodeText(String text) {
+        List<Integer> result = new ArrayList<>();
         ArrayDeque<Character> buffer = new ArrayDeque<>(LangDictionaryLZW.maximumLength + 1);
         String pair = "";
         int currentSymbol = addSymbolsToBuffer(buffer, text, 0);
@@ -97,10 +97,10 @@ public class LZW {
         return null;
     }
 
-    public static String DecodeText(List<Short> code) {
+    public static String DecodeText(List<Integer> code) {
         StringBuilder result = new StringBuilder();
         StringBuilder buffer = new StringBuilder();
-        for (Short b : code) {
+        for (Integer b : code) {
             String s = LangDictionaryLZW.getWord(b);
             result.append(s);
             buffer.append(s);
@@ -139,7 +139,7 @@ public class LZW {
         }
     }
 
-    public static void WriteBinFile(String filename, List<Short> codes, String lang) {
+    public static void WriteBinFile(String filename, List<Integer> codes, String lang) {
         try {
             FileOutputStream writer = new FileOutputStream(filename);
             DataOutputStream dos = new DataOutputStream(writer);
@@ -148,8 +148,8 @@ public class LZW {
                 dos.writeChar(textSymbol);
             }
             dos.writeChar('½');
-            for (Short code : codes) {
-                dos.writeShort(code);
+            for (Integer code : codes) {
+                dos.writeInt(code);
             }
             dos.close();
             writer.close();
@@ -158,8 +158,8 @@ public class LZW {
         }
     }
 
-    public static List<Short> ReadBinFile(String filename) {
-        List<Short> result = new ArrayList<>();
+    public static List<Integer> ReadBinFile(String filename) {
+        List<Integer> result = new ArrayList<>();
         boolean alphabetFormed = false;
         try {
             FileInputStream reader = new FileInputStream(filename);
@@ -170,7 +170,7 @@ public class LZW {
                     char c = dis.readChar();
                     if (c == '½') alphabetFormed = true;
                     else textSymbols.add(c);
-                } else result.add(dis.readShort());
+                } else result.add(dis.readInt());
             }
             dis.close();
             reader.close();
