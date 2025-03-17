@@ -11,49 +11,88 @@ public class LZW {
         LangDictionaryLZW = new LangDictionaryLZW();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Choose mode (encode - e, decode - d):");
+        boolean correct = false;
         String mode = scanner.nextLine();
+        while (!correct) {
+            correct = Objects.equals(mode, "e") || Objects.equals(mode, "d");
+            if (!correct) {
+                System.out.println("Please insert a correct order.");
+                mode = scanner.nextLine();
+            }
+        }
         String filename;
         String lang;
         String text = "";
+        long start;
+        long finish;
         switch (mode) {
             case "e":
+                correct = false;
                 System.out.println("Enter file name (.txt):");
                 filename = scanner.nextLine();
-                System.out.println("Enter language (est, eng):");
+                System.out.println("Enter language (est, eng, rus):");
                 lang = scanner.nextLine();
-                LangDictionaryLZW .setLang(lang);
-                text = switch (lang) {
-                    case "est" -> ReadTextFile("corpus_est/" + filename);
-                    case "eng" -> ReadTextFile("corpus_eng/" + filename);
-                    case "rus" -> ReadTextFile("corpus_rus/" + filename);
-                    default -> text;
-                };
+                start = System.currentTimeMillis();
+                while (!correct) {
+                    try {
+                        text = switch (lang) {
+                            case "est" -> ReadTextFile("corpus_est/" + filename);
+                            case "eng" -> ReadTextFile("corpus_eng/" + filename);
+                            case "rus" -> ReadTextFile("corpus_rus/" + filename);
+                            default -> text;
+                        };
+                        correct = true;
+                    } catch (RuntimeException e) {
+                        System.out.println("Please try again.");
+                        System.out.println("Enter file name (.txt):");
+                        filename = scanner.nextLine();
+                        System.out.println("Enter language (est, eng, rus):");
+                        lang = scanner.nextLine();
+                    }
+                }
+                LangDictionaryLZW.setLang(lang);
                 List<Integer> code = EncodeText(text);
                 WriteBinFile("bin_files/" + filename.substring(0, filename.length() - 3) + "bin", code, lang);
+                finish = System.currentTimeMillis();
+                System.out.println("Time spent: " + (finish - start) + " milliseconds.");
                 break;
             case "d":
+                correct = false;
                 System.out.println("Enter file name (.bin): ");
                 filename = scanner.nextLine();
-                WriteTextFile("decoded/" + filename.substring(0, filename.length() - 3) + "txt", DecodeText(ReadBinFile("bin_files/" + filename)));
+                start = System.currentTimeMillis();
+                while (!correct) {
+                    try {
+                        WriteTextFile("decoded/" + filename.substring(0, filename.length() - 3) + "txt", DecodeText(ReadBinFile("bin_files/" + filename)));
+                        correct = true;
+                    } catch (RuntimeException e) {
+                        System.out.println("Please try again.");
+                        System.out.println("Enter file name (.bin): ");
+                        filename = scanner.nextLine();
+                    }
+                }
+                finish = System.currentTimeMillis();
+                System.out.println("Time spent: " + (finish - start) + " milliseconds.");
                 break;
         }
     }
 
     public static List<Integer> EncodeText(String text) {
         List<Integer> result = new ArrayList<>();
-        ArrayDeque<Character> buffer = new ArrayDeque<>(LangDictionaryLZW.maximumLength + 1);
+        StringBuilder buffer = new StringBuilder();
         String pair = "";
         int currentSymbol = addSymbolsToBuffer(buffer, text, 0);
 
         while (!buffer.isEmpty()) {
-            String s = isStringHasAWord(buffer, LangDictionaryLZW.getFirstLetterList(buffer.peekFirst()));
+            String s = isStringHasAWord(buffer, LangDictionaryLZW.getFirstLetterList(buffer.charAt(0)));
             if (s == null) {
                 if (!pair.isEmpty()) {
-                    LangDictionaryLZW.addWord(pair + buffer.peekFirst());
+                    LangDictionaryLZW.addWord(pair + buffer.charAt(0));
                 }
-                pair = buffer.pop().toString();
+                pair = buffer.substring(0, 1);
+                buffer = new StringBuilder(buffer.substring(1));
             } else {
-                removeSymbolsFromBuffer(buffer, s.length());
+                buffer = new StringBuilder(buffer.substring(s.length()));
                 if (!pair.isEmpty()) {
                     LangDictionaryLZW.addWord(pair + s);
                 }
@@ -65,32 +104,22 @@ public class LZW {
         return result;
     }
 
-    public static void removeSymbolsFromBuffer(ArrayDeque<Character> buffer, int i) {
-        for (int j = 0; j < i; j++) {
-            buffer.pop();
-        }
-    }
-
-    public static int addSymbolsToBuffer(ArrayDeque<Character> buffer, String text, int curSym) {
+    public static int addSymbolsToBuffer(StringBuilder buffer, String text, int curSym) {
         int j;
-        int limit = buffer.size();
+        int limit = buffer.length();
         for (j = 0; j < LangDictionaryLZW.maximumLength - limit && curSym < text.length(); j++) {
-            buffer.add(text.charAt(curSym));
+            buffer.append(text.charAt(curSym));
             curSym++;
         }
         return j;
     }
 
-    public static String isStringHasAWord(ArrayDeque<Character> symbols, TreeSet<String> words) {
+    public static String isStringHasAWord(StringBuilder sb, TreeSet<String> words) {
         if (words == null || words.isEmpty()) {
             return null;
         }
-        StringBuilder sym = new StringBuilder();
-        for (char symbol : symbols) {
-            sym.append(symbol);
-        }
         for (String s : words) {
-            if (sym.toString().startsWith(s)) {
+            if (sb.toString().startsWith(s)) {
                 return s;
             }
         }
@@ -104,7 +133,7 @@ public class LZW {
             String s = LangDictionaryLZW.getWord(b);
             result.append(s);
             buffer.append(s);
-            if (buffer.length() > s.length()) {
+            if (buffer.length() > 1) {
                 LangDictionaryLZW.addWord(buffer.toString());
                 buffer = new StringBuilder(s);
             }
@@ -144,10 +173,10 @@ public class LZW {
             FileOutputStream writer = new FileOutputStream(filename);
             DataOutputStream dos = new DataOutputStream(writer);
             dos.writeUTF(lang);
+            dos.writeInt(textSymbols.size());
             for (Character textSymbol : textSymbols) {
                 dos.writeChar(textSymbol);
             }
-            dos.writeChar('½');
             for (Integer code : codes) {
                 dos.writeInt(code);
             }
@@ -160,21 +189,21 @@ public class LZW {
 
     public static List<Integer> ReadBinFile(String filename) {
         List<Integer> result = new ArrayList<>();
-        boolean alphabetFormed = false;
         try {
             FileInputStream reader = new FileInputStream(filename);
             DataInputStream dis = new DataInputStream(reader);
-            LangDictionaryLZW.setLang(dis.readUTF());
+            String lang = dis.readUTF();
+            for (int i = dis.readInt(); i > 0; i--) {
+                char c = dis.readChar();
+                textSymbols.add(c);
+            }
             while (dis.available() > 0) {
-                if (!alphabetFormed) {
-                    char c = dis.readChar();
-                    if (c == '½') alphabetFormed = true;
-                    else textSymbols.add(c);
-                } else result.add(dis.readInt());
+                result.add(dis.readInt());
             }
             dis.close();
             reader.close();
             LangDictionaryLZW.addTextSymbols(textSymbols);
+            LangDictionaryLZW.setLang(lang);
         } catch (IOException e) {
             throw new RuntimeException(e + "\nFile was not found in specified location.");
         }
