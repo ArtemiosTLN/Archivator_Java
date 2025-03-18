@@ -1,12 +1,14 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class LZW {
     public static LangDictionaryLZW LangDictionaryLZW;
     public static HashSet<Character> textSymbols;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         textSymbols = new HashSet<>();
         LangDictionaryLZW = new LangDictionaryLZW();
         Scanner scanner = new Scanner(System.in);
@@ -25,6 +27,9 @@ public class LZW {
         String text = "";
         long start;
         long finish;
+        long startSize;
+        long endSize;
+        float rate;
         switch (mode) {
             case "e":
                 correct = false;
@@ -52,18 +57,26 @@ public class LZW {
                 }
                 LangDictionaryLZW.setLang(lang);
                 List<Integer> code = EncodeText(text);
-                WriteBinFile("bin_files/" + filename.substring(0, filename.length() - 3) + "bin", code, lang);
+                String binPath = "bin_files/" + filename.substring(0, filename.length() - 3) + "bin";
+                WriteBinFile(binPath, code, lang);
                 finish = System.currentTimeMillis();
                 System.out.println("Time spent: " + (finish - start) + " milliseconds.");
+                startSize = Files.size(Paths.get("corpus_" + lang + "/" + filename));
+                endSize = Files.size(Paths.get(binPath));
+                System.out.println("File size before: " + startSize);
+                System.out.println("After: " + endSize);
+                rate = (float) endSize / (float) startSize * 100;
+                System.out.println("Compression efficiency: " + rate + "%");
                 break;
             case "d":
                 correct = false;
                 System.out.println("Enter file name (.bin): ");
                 filename = scanner.nextLine();
                 start = System.currentTimeMillis();
+                String filePath = "decoded/" + filename.substring(0, filename.length() - 3) + "txt";
                 while (!correct) {
                     try {
-                        WriteTextFile("decoded/" + filename.substring(0, filename.length() - 3) + "txt", DecodeText(ReadBinFile("bin_files/" + filename)));
+                        WriteTextFile(filePath, DecodeText(ReadBinFile("bin_files/" + filename)));
                         correct = true;
                     } catch (RuntimeException e) {
                         System.out.println("Please try again.");
@@ -73,6 +86,12 @@ public class LZW {
                 }
                 finish = System.currentTimeMillis();
                 System.out.println("Time spent: " + (finish - start) + " milliseconds.");
+                startSize = Files.size(Paths.get(filePath));
+                endSize = Files.size(Paths.get("bin_files/" + filename));
+                System.out.println("File size before: " + startSize);
+                System.out.println("After: " + endSize);
+                rate = (float) startSize / (float) endSize * 100;
+                System.out.println("Decompression efficiency: " + rate + "%");
                 break;
         }
     }
