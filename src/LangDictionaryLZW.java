@@ -1,9 +1,10 @@
 import java.util.*;
 
 public class LangDictionaryLZW {
-    public HashMap<String, Integer> Dictionary;
+    //private Class<Integer> Encoding;
+    public HashMap<String, Short> Dictionary;
     public HashMap<Character, TreeSet<String>> WordsByFirstLetter;
-    private Integer counter;
+    private Short counter;
     public int maximumLength;
     private final String[] eng = {"ed ", "er ", " the ", " a ", " an ", " as ", "ing ", " with ", "th", " if ",
             " and ", " are ", "'re ", " am ", " by ", "he", "in", "er", "an", "re", "on", "at", "en", "nd", "ti",
@@ -28,7 +29,7 @@ public class LangDictionaryLZW {
     public LangDictionaryLZW() {
         Dictionary = new HashMap<>();
         WordsByFirstLetter = new HashMap<>();
-        counter = Integer.MIN_VALUE + 1;
+        counter = Short.MIN_VALUE + 1;
     }
 
     public void addTextSymbols(HashSet<Character> symbols) {
@@ -65,10 +66,10 @@ public class LangDictionaryLZW {
             if (maximumLength < word.length()) maximumLength = word.length();
         }
     }
-    public Integer getCode(String word) {
+    public Short getCode(String word) {
         return Dictionary.get(word);
     }
-    public String getWord(Integer b) {
+    public String getWord(Short b) {
         for (String s : Dictionary.keySet()) {
             if (Objects.equals(b, Dictionary.get(s))) return s;
         }
@@ -76,5 +77,8 @@ public class LangDictionaryLZW {
     }
     public TreeSet<String> getFirstLetterList(Character firstLetter) {
         return WordsByFirstLetter.get(firstLetter);
+    }
+    public boolean isDictionaryNotFull() {
+        return counter < Short.MAX_VALUE;
     }
 }

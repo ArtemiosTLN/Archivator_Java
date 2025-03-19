@@ -56,7 +56,7 @@ public class LZW {
                     }
                 }
                 LangDictionaryLZW.setLang(lang);
-                List<Integer> code = EncodeText(text);
+                List<Short> code = EncodeText(text);
                 String binPath = "bin_files/" + filename.substring(0, filename.length() - 3) + "bin";
                 WriteBinFile(binPath, code, lang);
                 finish = System.currentTimeMillis();
@@ -96,8 +96,8 @@ public class LZW {
         }
     }
 
-    public static List<Integer> EncodeText(String text) {
-        List<Integer> result = new ArrayList<>();
+    public static List<Short> EncodeText(String text) {
+        List<Short> result = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         String pair = "";
         int currentSymbol = addSymbolsToBuffer(buffer, text, 0);
@@ -105,14 +105,14 @@ public class LZW {
         while (!buffer.isEmpty()) {
             String s = isStringHasAWord(buffer, LangDictionaryLZW.getFirstLetterList(buffer.charAt(0)));
             if (s == null) {
-                if (!pair.isEmpty()) {
+                if (!pair.isEmpty() && LangDictionaryLZW.isDictionaryNotFull()) {
                     LangDictionaryLZW.addWord(pair + buffer.charAt(0));
                 }
                 pair = buffer.substring(0, 1);
                 buffer = new StringBuilder(buffer.substring(1));
             } else {
                 buffer = new StringBuilder(buffer.substring(s.length()));
-                if (!pair.isEmpty()) {
+                if (!pair.isEmpty() && LangDictionaryLZW.isDictionaryNotFull()) {
                     LangDictionaryLZW.addWord(pair + s);
                 }
                 pair = s;
@@ -145,16 +145,18 @@ public class LZW {
         return null;
     }
 
-    public static String DecodeText(List<Integer> code) {
+    public static String DecodeText(List<Short> code) {
         StringBuilder result = new StringBuilder();
         StringBuilder buffer = new StringBuilder();
-        for (Integer b : code) {
+        for (Short b : code) {
             String s = LangDictionaryLZW.getWord(b);
             result.append(s);
-            buffer.append(s);
-            if (buffer.length() > 1) {
-                LangDictionaryLZW.addWord(buffer.toString());
-                buffer = new StringBuilder(s);
+            if (LangDictionaryLZW.isDictionaryNotFull()) {
+                buffer.append(s);
+                if (buffer.length() > 1) {
+                    LangDictionaryLZW.addWord(buffer.toString());
+                    buffer = new StringBuilder(s);
+                }
             }
         }
         return result.toString();
@@ -187,17 +189,17 @@ public class LZW {
         }
     }
 
-    public static void WriteBinFile(String filename, List<Integer> codes, String lang) {
+    public static void WriteBinFile(String filename, List<Short> codes, String lang) {
         try {
             FileOutputStream writer = new FileOutputStream(filename);
             DataOutputStream dos = new DataOutputStream(writer);
             dos.writeUTF(lang);
-            dos.writeInt(textSymbols.size());
+            dos.writeShort((short) textSymbols.size());
             for (Character textSymbol : textSymbols) {
                 dos.writeChar(textSymbol);
             }
-            for (Integer code : codes) {
-                dos.writeInt(code);
+            for (Short code : codes) {
+                dos.writeShort(code);
             }
             dos.close();
             writer.close();
@@ -206,18 +208,19 @@ public class LZW {
         }
     }
 
-    public static List<Integer> ReadBinFile(String filename) {
-        List<Integer> result = new ArrayList<>();
+    public static List<Short> ReadBinFile(String filename) {
+        List<Short> result = new ArrayList<>();
         try {
             FileInputStream reader = new FileInputStream(filename);
             DataInputStream dis = new DataInputStream(reader);
             String lang = dis.readUTF();
-            for (int i = dis.readInt(); i > 0; i--) {
+            short i = dis.readShort();
+            for (; i > 0; i--) {
                 char c = dis.readChar();
                 textSymbols.add(c);
             }
             while (dis.available() > 0) {
-                result.add(dis.readInt());
+                result.add(dis.readShort());
             }
             dis.close();
             reader.close();
