@@ -18,13 +18,13 @@ public class LangDictionaryLZW {
             " вы", " к", " меж", " на", " не", " ни", " о", " об", " от", " по", " под", " про", " с", " у", " без",
             " бес", " вос", " воз", " из", " ис", " раз", " рас", " пре", " при", "айш", "ее", "же", "ше", "ть", "аю ",
             "ет ", "ем ", "ют ", "л ", "ли ", "ла ", "ло ", "ся ", "сь ", "чи", "ши", " бы ", " я ", " ты ", " мы ",
-            " вы ", " он", };
-    private final String[] est = {"sse", "st", "le", "lt", "ks", "ni ", "na ", "ta", "ga ", "te ", "de ", "id ",
-            "im ", "em ", "ma", "da", "ev ", "nud ", "tud ", "dud ", "takse ", "dakse ", "akse ", "me ",
-            "vad ", "ti ", "di ", "si", " ol", " ei ", " ja ", "vat ", " är", "ku ", "ne", "se", "pp",
-            "aa", "ee", "uu", "üü", "ää", "öö", "ii", "oo", "nn", "mm", "ll", " see ", "kk", ", et ",
-            "pp", "sid ", "seid ", "ks", "ss", "ea", "au", "ki ", "gi ", " nii ", " kas ", " kes ", " kelle ",
-            " mille ", " keda ", " mida ", " nagu ", " ka ", " on ", " see ", " selle ", " seda "};
+            " вы ", " он"};
+    private final String[] est = {"sse", "st", "le", "lt", "ks", "ni ", "na ", "ta", "ga ", "te", "de", "id ",
+            "im ", "em ", "ma", "da", "ev ", "nud ", "tud ", "dud ", "takse ", "dakse ", "akse ", "me ", "äe",
+            "ti", "di", "si", " ol", "ei", " ja ", "vat ", "n ", "b ", "d ", "vad ", " är", "nd", "hk", "tu",
+            "ku ", "ne", "se", "oi", "ke ", "kku ", "ku ", "õi", "ai", "ld", "va", "mb", "br", "pr", "hv",
+            "aa", "ee", "uu", "üü", "ää", "öö", "ii", "oo", "nn", "mm", "ll", " see ", "kk", ", et ", "it ",
+            "pp", "sid ", "seid ", "ks", "ss", "ea", "au", "ki ", "gi ", " kel", " mil", " on ", " sell"};
 
     public LangDictionaryLZW() {
         Dictionary = new HashMap<>();
