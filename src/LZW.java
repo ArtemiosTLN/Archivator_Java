@@ -4,6 +4,73 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+/***
+ * ENG
+ * LZW algorithm using archiver
+ * Made as a result of the computer science bachelor thesis titled "Development of the text archivers using linguistic features of the language"
+ * Author: Artjom Šiškov
+ * University: Tartu University
+ * ---------------------------
+ * Instructions:
+ * 1. Build and run the LZW.java file with the desired Java IDE.
+ * 2. Choose mode: 'e' for encoding and 'd' for decoding.
+ * 3. For encoding:
+ *      a. Type the file name with the ".txt" at the end.
+ *      b. Choose language: est - Estonian, eng - English, rus - Russian, none - the language is not listed.
+ *      NB! The file must be stored at the corresponding "corpus_*" folder in the project structure, where '*' is the language short code (est, eng, rus, none).
+ *      c. Wait until the system will encode the file.
+ *      d. After encoding the ".bin" file withe the same name will be created and added to the "bin_files" folder in the project.
+ *      Note: The system will tell you the data compression ratio given in % and the time spent in milliseconds.
+ * 4. For decoding:
+ *      a. Type the binary file name with the ".bin" at the end. The file must be created by this archiver.
+ *      NB! The desired file must be located in the "bin_files" folder in the project structure.
+ *      b. Wait until the file is decoded. All decoded files are added to the "decoded" folder.
+ *      Note: The system will tell you the data decompression ratio given in % and the time spent in milliseconds.
+ * EST
+ * LZW algoritmi kasutatav arhiveerija.
+ * Valminud bakalaureusetöö raames pealkirjaga "Tekstiarhiveerijate arendamine kasutades keelelisi iseärasusi"
+ * Autor: Artjom Šiškov
+ * Ülikool: Tartu Ülikool
+ * ---------------------------
+ * Juhised:
+ * 1. Koosta ja käivita LZW.java fail soovitud Java IDE-s.
+ * 2. Vali režiim: 'e' kodeerimiseks ja 'd' dekodeerimiseks.
+ * 3. Kodeerimiseks:
+ *      a. Sisesta faili nimi koos lõpuga ".txt".
+ *      b. Vali keel: est - eesti, eng - inglise, rus - vene, none - keel ei ole loetletud.
+ *      NB! Fail peab olema salvestatud vastavasse "corpus_*" kausta projekti struktuuris, kus '*' on keele lühend (est, eng, rus, none).
+ *      c. Oota, kuni süsteem kodeerib faili.
+ *      d. Pärast kodeerimist luuakse sama nimega ".bin" fail ja lisatakse see "bin_files" kausta projektis.
+ *      Märkus: Süsteem kuvab andmete tihendamise suhte protsentides ja kulutatud aja millisekundites.
+ * 4. Dekodeerimiseks:
+ *      a. Sisesta binaarfaili nimi koos lõpuga ".bin". Fail peab olema loodud selle arhiveerija poolt.
+ *      NB! Soovitud fail peab asuma kaustas "bin_files" projekti struktuuris.
+ *      b. Oota, kuni fail dekodeeritakse. Kõik dekodeeritud failid lisatakse kausta "decoded".
+ *      Märkus: Süsteem kuvab andmete dekompressiooni suhte protsentides ja kulutatud aja millisekundites.
+ * РУС
+ * Архиватор, использующий алгоритм LZW
+ * Разработан в рамках бакалаврской работы по теме "Разработка текстовых архиваторов с использованием лингвистических особенностей языка"
+ * Автор: Артём Шишков
+ * Университет: Тартуский университет
+ * ---------------------------
+ * Инструкции:
+ * 1. Скомпилируйте и запустите файл LZW.java в выбранной среде разработки Java.
+ * 2. Выберите режим: 'e' — для кодирования, 'd' — для декодирования.
+ * 3. Для кодирования:
+ *      a. Введите имя файла с расширением ".txt".
+ *      b. Выберите язык: est — эстонский, eng — английский, rus — русский, none — язык не указан.
+ *      NB! Файл должен находиться в соответствующей папке "corpus_*" в структуре проекта, где '*' — это краткий код языка (est, eng, rus, none).
+ *      c. Подождите, пока система закодирует файл.
+ *      d. После кодирования будет создан файл с расширением ".bin" и тем же именем, который будет добавлен в папку "bin_files" проекта.
+ *      Примечание: Система покажет коэффициент сжатия данных в процентах и затраченное время в миллисекундах.
+ * 4. Для декодирования:
+ *      a. Введите имя бинарного файла с расширением ".bin". Файл должен быть создан этим архиватором.
+ *      NB! Необходимый файл должен находиться в папке "bin_files" в структуре проекта.
+ *      b. Подождите, пока файл будет декодирован. Все декодированные файлы добавляются в папку "decoded".
+ *      Примечание: Система покажет коэффициент восстановления данных в процентах и затраченное время в миллисекундах.
+ */
+
+
 public class LZW {
     public static LangDictionaryLZW LangDictionaryLZW;
     public static HashSet<Character> textSymbols;
@@ -35,7 +102,7 @@ public class LZW {
                 correct = false;
                 System.out.println("Enter file name (.txt):");
                 filename = scanner.nextLine();
-                System.out.println("Enter language (est, eng, rus):");
+                System.out.println("Enter language (est, eng, rus, none):");
                 lang = scanner.nextLine();
                 start = System.currentTimeMillis();
                 while (!correct) {
@@ -44,14 +111,15 @@ public class LZW {
                             case "est" -> ReadTextFile("corpus_est/" + filename);
                             case "eng" -> ReadTextFile("corpus_eng/" + filename);
                             case "rus" -> ReadTextFile("corpus_rus/" + filename);
-                            default -> text;
+                            case "none" -> ReadTextFile("corpus_none/" + filename);
+                            default -> throw new IllegalStateException("Unexpected value: " + lang);
                         };
                         correct = true;
-                    } catch (RuntimeException e) {
+                    } catch (Exception e) {
                         System.out.println("Please try again.");
                         System.out.println("Enter file name (.txt):");
                         filename = scanner.nextLine();
-                        System.out.println("Enter language (est, eng, rus):");
+                        System.out.println("Enter language (est, eng, rus, none):");
                         lang = scanner.nextLine();
                     }
                 }
@@ -73,12 +141,13 @@ public class LZW {
                 System.out.println("Enter file name (.bin): ");
                 filename = scanner.nextLine();
                 start = System.currentTimeMillis();
-                String filePath = "decoded/" + filename.substring(0, filename.length() - 3) + "txt";
+                String filePath = "";
                 while (!correct) {
                     try {
+                        filePath = "decoded/" + filename.substring(0, filename.length() - 3) + "txt";
                         WriteTextFile(filePath, DecodeText(ReadBinFile("bin_files/" + filename)));
                         correct = true;
-                    } catch (RuntimeException e) {
+                    } catch (Exception e) {
                         System.out.println("Please try again.");
                         System.out.println("Enter file name (.bin): ");
                         filename = scanner.nextLine();

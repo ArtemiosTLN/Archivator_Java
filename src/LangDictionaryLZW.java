@@ -52,6 +52,8 @@ public class LangDictionaryLZW {
                     this.addWord(s);
                 }
                 break;
+            case "none":
+                break;
         }
     }
     public void addWord(String word) {
