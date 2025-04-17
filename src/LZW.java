@@ -6,7 +6,7 @@ import java.util.*;
 
 /***
  * ENG
- * LZW algorithm using archiver
+ * LZW algorithm archiver
  * Made as a result of the computer science bachelor thesis titled "Development of the text archivers using linguistic features of the language"
  * Author: Artjom Šiškov
  * University: Tartu University

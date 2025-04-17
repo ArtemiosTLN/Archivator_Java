@@ -1,5 +1,17 @@
 import java.util.*;
 
+/**
+ * ENG
+ * This is a file that contains language dictionaries and all the stuff needed for handling them.
+ * If you want to add another language dictionary you can do it here.
+ * EST
+ * See fail sisaldab kõike keele sõnastike ja teise vajalike asju nende käsitsemiseks.
+ * Kui Te tahate oma sõnastiku lisada, tehke seda siin.
+ * RUS
+ * Этот файл содержит языковые словари и все необходимые вещи для управления ними.
+ * Если вы хотите добавить свой словарь, то это можно сделать здесь.
+ */
+
 public class LangDictionaryLZW {
     public LinkedHashMap<String, Integer> Dictionary;
     public HashMap<Character, TreeSet<String>> WordsByFirstLetter;
@@ -8,8 +20,9 @@ public class LangDictionaryLZW {
             " and ", " are ", "'re ", " am ", " by ", "he", "in", "er", "an", "re", "on", "at", "en", "nd", "ti",
             "es", "or", "te", "of", "ed", " is ", "it", "al", "ar", "st", "to", "nt", "oo", " what ", "n't ", "'s",
             "ion ", "ful ", "less ", " which ", " for ", " at ", " no ", " to ", " be", " not ", " from ", "ence ",
-            "sh", "ch", "ly ", "ist ", "ll", "ous ", " re", " un", " de", " he ", " she ", " I ", " can ", " ha",
-            " pre", " so "};
+            "sh", "ch", "ly", "ist", "ll", "ous ", "re", "un", "de", " he ", " she ", " I ", " can ", " ha", "'m",
+            "pre", " so ", "ee", "oa", "wh", "ea", "ble", "ow", "ou", "ie", "ight", "ay", "oi", "ai", "oy", "'re"
+            ,"'ve", "ph", "qu"};
     private final String[] rus = {"нн", "енн", "ённ", "ян", "ый ", "ая ", "ое ", "ые ", "ий ", "ие ", "ость ", "ого ",
             "ой ", "ых ", "их ", "ые ", "ую ", "ому", "ым ", "им ", "ыми ", "ими ", "а ", "ов ", "ев ", "и ", "е ",
             "ам ", "у ", "ою ", "ами ", "ах ", "ом ", "ях ", "ями ", "ям ", "ей ", "ы ", " в", " во", " до", " за",
