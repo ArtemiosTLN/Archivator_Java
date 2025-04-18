@@ -89,8 +89,7 @@ public class LZW {
                 mode = scanner.nextLine();
             }
         }
-        String filename;
-        String lang;
+        String lang = "";
         String text = "";
         long start;
         long finish;
@@ -99,69 +98,108 @@ public class LZW {
         float rate;
         switch (mode) {
             case "e":
-                correct = false;
-                System.out.println("Enter file name (.txt):");
-                filename = scanner.nextLine();
-                System.out.println("Enter language (est, eng, rus, none):");
-                lang = scanner.nextLine();
-                start = System.currentTimeMillis();
-                while (!correct) {
-                    try {
-                        text = switch (lang) {
-                            case "est" -> ReadTextFile("corpus_est/" + filename);
-                            case "eng" -> ReadTextFile("corpus_eng/" + filename);
-                            case "rus" -> ReadTextFile("corpus_rus/" + filename);
-                            case "none" -> ReadTextFile("corpus_none/" + filename);
-                            default -> throw new IllegalStateException("Unexpected value: " + lang);
-                        };
-                        correct = true;
-                    } catch (Exception e) {
-                        System.out.println("Please try again.");
-                        System.out.println("Enter file name (.txt):");
-                        filename = scanner.nextLine();
-                        System.out.println("Enter language (est, eng, rus, none):");
-                        lang = scanner.nextLine();
-                    }
+                File file = null;
+                while (file == null) {
+                    file = PrintFolderContent(new File("corpora"));
                 }
+
+                correct = false;
+                while (!correct) {
+                    System.out.println("Enter language (est, eng, rus, none):");
+                    lang = scanner.nextLine();
+                    if (Objects.equals(lang, "est") || Objects.equals(lang, "eng") || Objects.equals(lang, "rus") || Objects.equals(lang, "none")) {
+                        text = ReadTextFile(file.getPath());
+                        correct = true;
+                    } else System.out.println("Try again");
+                }
+
+                System.out.println("Processing... Please wait.");
+                start = System.currentTimeMillis();
                 LangDictionaryLZW.setLang(lang);
                 List<Short> code = EncodeText(text);
-                String binPath = "bin_files/" + filename.substring(0, filename.length() - 3) + "bin";
+                String binPath = "bin_files/" + file.getName().substring(0, file.getName().length() - 3) + "bin";
                 WriteBinFile(binPath, code, lang);
                 finish = System.currentTimeMillis();
                 System.out.println("Time spent: " + (finish - start) + " milliseconds.");
-                startSize = Files.size(Paths.get("corpus_" + lang + "/" + filename));
+                startSize = Files.size(file.toPath());
                 endSize = Files.size(Paths.get(binPath));
                 System.out.println("File size before: " + startSize);
                 System.out.println("After: " + endSize);
                 rate = (float) endSize / (float) startSize * 100;
                 System.out.println("Compression efficiency: " + rate + "%");
                 break;
+
             case "d":
-                correct = false;
-                System.out.println("Enter file name (.bin): ");
-                filename = scanner.nextLine();
-                start = System.currentTimeMillis();
-                String filePath = "";
-                while (!correct) {
-                    try {
-                        filePath = "decoded/" + filename.substring(0, filename.length() - 3) + "txt";
-                        WriteTextFile(filePath, DecodeText(ReadBinFile("bin_files/" + filename)));
-                        correct = true;
-                    } catch (Exception e) {
-                        System.out.println("Please try again.");
-                        System.out.println("Enter file name (.bin): ");
-                        filename = scanner.nextLine();
+                File f = new File("bin_files");
+                if (f.isDirectory()) {
+                    if (f.listFiles() == null || Objects.requireNonNull(f.listFiles()).length == 0) {
+                        System.out.println("No files to decode.");
+                        return;
                     }
                 }
+
+                File binFile = null;
+                while (binFile == null) {
+                    binFile = PrintFolderContent(new File("bin_files"));
+                }
+
+                System.out.println("Processing... Please wait.");
+                start = System.currentTimeMillis();
+                String filePath = "decoded/" + binFile.getName().substring(0, binFile.getName().length() - 3) + "txt";
+                WriteTextFile(filePath, DecodeText(ReadBinFile(binFile.getPath())));
                 finish = System.currentTimeMillis();
                 System.out.println("Time spent: " + (finish - start) + " milliseconds.");
                 startSize = Files.size(Paths.get(filePath));
-                endSize = Files.size(Paths.get("bin_files/" + filename));
+                endSize = Files.size(binFile.toPath());
                 System.out.println("File size before: " + startSize);
                 System.out.println("After: " + endSize);
                 rate = (float) startSize / (float) endSize * 100;
                 System.out.println("Decompression efficiency: " + rate + "%");
                 break;
+        }
+    }
+
+    public static File PrintFolderContent(File dir) {
+        Scanner sc = new Scanner(System.in);
+        String yellow = "\u001B[33m";
+        String blue = "\u001B[34m";
+        String reset = "\u001B[0m";
+        while (true) {
+            boolean correct = false;
+            if (dir.isDirectory()) {
+                File[] files = dir.listFiles();
+                if (files == null || files.length == 0) {
+                    System.out.println("NB! Folder is empty!");
+                    return null;
+                }
+                else {
+                    int i = 0;
+                    for (File file : files) {
+                        i++;
+                        if (file.isDirectory()) {
+                            System.out.println(i + ". " + yellow + file.getName() + reset);
+                        } else if (file.isFile()) {
+                            System.out.println(i + ". " + blue + file.getName() + reset);
+                        } else System.out.println(i + ". " + file.getName());
+                    }
+                    while (!correct) {
+                        try {
+                            System.out.println("Type number: ");
+                            int n = Integer.parseInt(0 + sc.nextLine());
+                            if (n > files.length || n < 1) {
+                                System.out.println("Invalid number, try again.");
+                            } else {
+                                correct = true;
+                                dir = files[n - 1];
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Non number input detected. Please try again.");
+                        }
+                    }
+                }
+            } else if (dir.isFile()) {
+                return dir;
+            }
         }
     }
 
