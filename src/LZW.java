@@ -15,16 +15,15 @@ import java.util.*;
  * 1. Build and run the LZW.java file with the desired Java IDE.
  * 2. Choose mode: 'e' for encoding and 'd' for decoding.
  * 3. For encoding:
- *      a. Type the file name with the ".txt" at the end.
- *      b. Choose language: est - Estonian, eng - English, rus - Russian, none - the language is not listed.
- *      NB! The file must be stored at the corresponding "corpus_*" folder in the project structure, where '*' is the language short code (est, eng, rus, none).
- *      c. Wait until the system will encode the file.
+ *      a. Navigate through the file system, starting from the "corpora" folder.
+ *      b. Choose the file you want to encode. Files are marked blue, folders marked yellow.
+ *      c. Choose the language the file is written in. est - Estonian, eng - English, rus - Russian and none - the language is not listed.
  *      d. After encoding the ".bin" file withe the same name will be created and added to the "bin_files" folder in the project.
  *      Note: The system will tell you the data compression ratio given in % and the time spent in milliseconds.
  * 4. For decoding:
- *      a. Type the binary file name with the ".bin" at the end. The file must be created by this archiver.
- *      NB! The desired file must be located in the "bin_files" folder in the project structure.
- *      b. Wait until the file is decoded. All decoded files are added to the "decoded" folder.
+ *      a. Navigate through the file system, starting from the "bin_files" folder.
+ *      b. Choose the file you want to decode. Files are marked blue, folders marked yellow.
+ *      c. Wait until the file is decoded. All decoded files are added to the "decoded" folder.
  *      Note: The system will tell you the data decompression ratio given in % and the time spent in milliseconds.
  * EST
  * LZW algoritmi kasutatav arhiveerija.
@@ -36,16 +35,15 @@ import java.util.*;
  * 1. Koosta ja käivita LZW.java fail soovitud Java IDE-s.
  * 2. Vali režiim: 'e' kodeerimiseks ja 'd' dekodeerimiseks.
  * 3. Kodeerimiseks:
- *      a. Sisesta faili nimi koos lõpuga ".txt".
- *      b. Vali keel: est - eesti, eng - inglise, rus - vene, none - keel ei ole loetletud.
- *      NB! Fail peab olema salvestatud vastavasse "corpus_*" kausta projekti struktuuris, kus '*' on keele lühend (est, eng, rus, none).
- *      c. Oota, kuni süsteem kodeerib faili.
+ *      a. Liikuge failisüsteemis alustades kaustast "corpora".
+ *      b. Valige fail kodeerimiseks. Failid on tähistatud sinise ja kaustad kollase värvidega.
+ *      c. Valige keel: est - eesti, eng - inglise, rus - vene, none - keel ei ole loetletud.
  *      d. Pärast kodeerimist luuakse sama nimega ".bin" fail ja lisatakse see "bin_files" kausta projektis.
  *      Märkus: Süsteem kuvab andmete tihendamise suhte protsentides ja kulutatud aja millisekundites.
  * 4. Dekodeerimiseks:
- *      a. Sisesta binaarfaili nimi koos lõpuga ".bin". Fail peab olema loodud selle arhiveerija poolt.
- *      NB! Soovitud fail peab asuma kaustas "bin_files" projekti struktuuris.
- *      b. Oota, kuni fail dekodeeritakse. Kõik dekodeeritud failid lisatakse kausta "decoded".
+ *      a. Liikuge failisüsteemis alustades kaustast "bin_files".
+ *      b. Valige fail dekodeerimiseks. Failid on tähistatud sinise ja kaustad kollase värvidega.
+ *      b. Oodake, kuni fail dekodeeritakse. Kõik dekodeeritud failid lisatakse kausta "decoded".
  *      Märkus: Süsteem kuvab andmete dekompressiooni suhte protsentides ja kulutatud aja millisekundites.
  * РУС
  * Архиватор, использующий алгоритм LZW
@@ -57,16 +55,14 @@ import java.util.*;
  * 1. Скомпилируйте и запустите файл LZW.java в выбранной среде разработки Java.
  * 2. Выберите режим: 'e' — для кодирования, 'd' — для декодирования.
  * 3. Для кодирования:
- *      a. Введите имя файла с расширением ".txt".
- *      b. Выберите язык: est — эстонский, eng — английский, rus — русский, none — язык не указан.
- *      NB! Файл должен находиться в соответствующей папке "corpus_*" в структуре проекта, где '*' — это краткий код языка (est, eng, rus, none).
- *      c. Подождите, пока система закодирует файл.
+ *      a. Перемещайтесь по файловой системе, начиная с папки "corpora".
+ *      b. Выберите файл, который хотите закодировать. Файлы отмечены синим, папки отмечены желтым.
  *      d. После кодирования будет создан файл с расширением ".bin" и тем же именем, который будет добавлен в папку "bin_files" проекта.
  *      Примечание: Система покажет коэффициент сжатия данных в процентах и затраченное время в миллисекундах.
  * 4. Для декодирования:
- *      a. Введите имя бинарного файла с расширением ".bin". Файл должен быть создан этим архиватором.
- *      NB! Необходимый файл должен находиться в папке "bin_files" в структуре проекта.
- *      b. Подождите, пока файл будет декодирован. Все декодированные файлы добавляются в папку "decoded".
+ *      а. Перемещайтесь по файловой системе, начиная с папки "bin_files".
+ *      б. Выберите файл, который хотите декодировать. Файлы отмечены синим, папки отмечены желтым.
+ *      в. Подождите, пока файл будет декодирован. Все декодированные файлы добавляются в папку "decoded".
  *      Примечание: Система покажет коэффициент восстановления данных в процентах и затраченное время в миллисекундах.
  */
 
@@ -234,7 +230,7 @@ public class LZW {
     public static int addSymbolsToBuffer(StringBuilder buffer, String text, int curSym) {
         int j;
         int limit = buffer.length();
-        for (j = 0; j < LangDictionaryLZW.maximumLength - limit && curSym < text.length(); j++) {
+        for (j = 0; j < LangDictionaryLZW.maximumLength - limit + 1 && curSym < text.length(); j++) {
             buffer.append(text.charAt(curSym));
             curSym++;
         }
