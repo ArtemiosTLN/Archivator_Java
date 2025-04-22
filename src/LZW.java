@@ -155,7 +155,7 @@ public class LZW {
         }
     }
 
-    public static File PrintFolderContent(File dir) {
+    public static File PrintFolderContent(File dir) throws IOException {
         Scanner sc = new Scanner(System.in);
         String yellow = "\u001B[33m";
         String blue = "\u001B[34m";
@@ -175,7 +175,7 @@ public class LZW {
                         if (file.isDirectory()) {
                             System.out.println(i + ". " + yellow + file.getName() + reset);
                         } else if (file.isFile()) {
-                            System.out.println(i + ". " + blue + file.getName() + reset);
+                            System.out.println(i + ". " + blue + file.getName() + reset + " " + Files.size(file.toPath()) / 1000 + " Kilobytes");
                         } else System.out.println(i + ". " + file.getName());
                     }
                     while (!correct) {
