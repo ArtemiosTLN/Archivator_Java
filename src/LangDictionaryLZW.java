@@ -13,9 +13,10 @@ import java.util.*;
  */
 
 public class LangDictionaryLZW {
-    public LinkedHashMap<String, Integer> Dictionary;
+    public LinkedHashMap<String, Short> Dictionary;
     public HashMap<Character, TreeSet<String>> WordsByFirstLetter;
     public int maximumLength;
+    public short code = Short.MIN_VALUE;
     private final String[] eng = {"ed ", "er ", " the ", " a ", " an ", " as ", "ing ", " with ", "th", " if ",
             " and ", " are ", "'re ", " am ", " by ", "he", "in", "er", "an", "re", "on", "at", "en", "nd", "ti",
             "es", "or", "te", "of", "ed", " is ", "it", "al", "ar", "st", "to", "nt", "oo", " what ", "n't ", "'s",
@@ -70,35 +71,23 @@ public class LangDictionaryLZW {
         }
     }
     public void addWord(String word) {
+        Dictionary.put(word, code);
+        code++;
         if (word.length() > 1) {
-            Dictionary.put(word, 0);
             if (WordsByFirstLetter.containsKey(word.charAt(0))) {
                 WordsByFirstLetter.get(word.charAt(0)).add(word);
             } else WordsByFirstLetter.put(word.charAt(0), new TreeSet<>(Comparator.reverseOrder()){{add(word);}});
             if (maximumLength < word.length()) maximumLength = word.length();
-        } else Dictionary.put(word, -1);
+        }
     }
     public Short getCode(String word) {
-        short i = Short.MIN_VALUE;
-        for (String s : Dictionary.keySet()) {
-            if (word.equals(s)) {
-                incrementCounter(word);
-                return i;
-            } else i++;
-        }
-        return -1;
-    }
-    public void incrementCounter(String s) {
-        if (s.length() > 1) Dictionary.put(s, Dictionary.get(s) + 1);
+        return Dictionary.get(word);
     }
     public String getWord(Short b) {
-        short i = Short.MIN_VALUE;
         for (String s : Dictionary.keySet()) {
-            if (i == b) {
-                incrementCounter(s);
+            if (Dictionary.get(s).equals(b)) {
                 return s;
             }
-            else i++;
         }
         return null;
     }
@@ -106,20 +95,6 @@ public class LangDictionaryLZW {
         return WordsByFirstLetter.get(firstLetter);
     }
     public boolean isDictionaryNotFull() {
-        return Dictionary.size() < Short.MAX_VALUE * 2;
-    }
-    public void removeRedundantWords() {
-        ArrayList<String> toRemove = new ArrayList<>();
-        int i = Dictionary.size() - 100;
-        for (String s : Dictionary.keySet()) {
-            if (Dictionary.get(s) == 0) toRemove.add(s);
-            i--;
-            if (i >= 0) break;
-        }
-        if (!toRemove.isEmpty()) {
-            for (String s : toRemove) {
-                Dictionary.remove(s);
-            }
-        }
+        return code < Short.MAX_VALUE;
     }
 }

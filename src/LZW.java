@@ -222,7 +222,6 @@ public class LZW {
             }
             result.add(LangDictionaryLZW.getCode(pair));
             currentSymbol += addSymbolsToBuffer(buffer, text, currentSymbol);
-            if (!LangDictionaryLZW.isDictionaryNotFull()) LangDictionaryLZW.removeRedundantWords();
         }
         return result;
     }
@@ -261,7 +260,7 @@ public class LZW {
                     LangDictionaryLZW.addWord(buffer.toString());
                     buffer = new StringBuilder(s);
                 }
-            } else LangDictionaryLZW.removeRedundantWords();
+            }
         }
         return result.toString();
     }
