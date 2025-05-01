@@ -16,13 +16,13 @@ import java.util.*;
  * 2. Choose mode: 'e' for encoding and 'd' for decoding.
  * 3. For encoding:
  *      a. Navigate through the file system, starting from the "corpora" folder.
- *      b. Choose the file you want to encode. Files are marked blue, folders marked yellow.
+ *      b. Choose the file you want to encode. Files are marked in blue, folders marked in yellow.
  *      c. Choose the language the file is written in. est - Estonian, eng - English, rus - Russian and none - the language is not listed.
- *      d. After encoding the ".bin" file withe the same name will be created and added to the "bin_files" folder in the project.
+ *      d. After encoding the ".bin" file with the same name will be created and added to the "bin_files" folder in the project.
  *      Note: The system will tell you the data compression ratio given in % and the time spent in milliseconds.
  * 4. For decoding:
  *      a. Navigate through the file system, starting from the "bin_files" folder.
- *      b. Choose the file you want to decode. Files are marked blue, folders marked yellow.
+ *      b. Choose the file you want to decode. Files are marked in blue, folders marked in yellow.
  *      c. Wait until the file is decoded. All decoded files are added to the "decoded" folder.
  *      Note: The system will tell you the data decompression ratio given in % and the time spent in milliseconds.
  * EST
