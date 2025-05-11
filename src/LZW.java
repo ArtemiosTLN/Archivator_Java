@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /***
- * ENG
+ * ENG Version 1.0.0
  * LZW algorithm archiver
  * Made as a result of the computer science bachelor thesis titled "Development of the text archivers using linguistic features of the language"
  * Author: Artjom Šiškov
@@ -25,7 +25,7 @@ import java.util.*;
  *      b. Choose the file you want to decode. Files are marked in blue, folders marked in yellow.
  *      c. Wait until the file is decoded. All decoded files are added to the "decoded" folder.
  *      Note: The system will tell you the data decompression ratio given in % and the time spent in milliseconds.
- * EST
+ * EST Versioon 1.0.0
  * LZW algoritmi kasutatav arhiveerija.
  * Valminud bakalaureusetöö raames pealkirjaga "Tekstiarhiveerijate arendamine kasutades keelelisi iseärasusi"
  * Autor: Artjom Šiškov
@@ -45,7 +45,7 @@ import java.util.*;
  *      b. Valige fail dekodeerimiseks. Failid on tähistatud sinise ja kaustad kollase värvidega.
  *      b. Oodake, kuni fail dekodeeritakse. Kõik dekodeeritud failid lisatakse kausta "decoded".
  *      Märkus: Süsteem kuvab andmete dekompressiooni suhte protsentides ja kulutatud aja millisekundites.
- * РУС
+ * РУС Версия 1.0.0
  * Архиватор, использующий алгоритм LZW
  * Разработан в рамках бакалаврской работы по теме "Разработка текстовых архиваторов с использованием лингвистических особенностей языка"
  * Автор: Артём Шишков
@@ -70,6 +70,7 @@ import java.util.*;
 public class LZW {
     public static LangDictionaryLZW LangDictionaryLZW;
     public static HashSet<Character> textSymbols;
+    public static String version = "1.0.0";
 
     public static void main(String[] args) throws IOException {
         textSymbols = new HashSet<>();
@@ -296,6 +297,7 @@ public class LZW {
         try {
             FileOutputStream writer = new FileOutputStream(filename);
             DataOutputStream dos = new DataOutputStream(writer);
+            dos.writeUTF(version);
             dos.writeUTF(lang);
             dos.writeShort((short) textSymbols.size());
             for (Character textSymbol : textSymbols) {
@@ -316,6 +318,10 @@ public class LZW {
         try {
             FileInputStream reader = new FileInputStream(filename);
             DataInputStream dis = new DataInputStream(reader);
+            String ver = dis.readUTF();
+            if (!ver.equals(version)) {
+                if (!HandleVersionMismatch(ver)) System.exit(0);
+            }
             String lang = dis.readUTF();
             short i = dis.readShort();
             for (; i > 0; i--) {
@@ -333,5 +339,23 @@ public class LZW {
             throw new RuntimeException(e + "\nFile was not found in specified location.");
         }
         return result;
+    }
+
+    public static boolean HandleVersionMismatch(String fileVer) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("Warning! This archiver current version is " + version + " but the file was encoded using " + fileVer + " version."
+                    + "\n" + "Decoding may fail or lead to errors in the output. Are you sure you want to continue?" +
+                    "\n" + "Y/n");
+            String c = sc.nextLine().toLowerCase();
+            switch (c) {
+                case "y":
+                    return true;
+                case "n":
+                    return false;
+                default:
+                    System.out.println("Invalid order. Please try again.");
+            }
+        }
     }
 }
