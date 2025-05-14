@@ -67,7 +67,7 @@ import java.util.*;
  */
 
 
-public class LZW {
+public class LZW_Ling {
     public static LangDictionaryLZW LangDictionaryLZW;
     public static HashSet<Character> textSymbols;
     public static String version = "1.0.0";
